@@ -1,9 +1,7 @@
 package dev.valeryvpetrov.findme
 
 import android.content.Context
-import android.graphics.BitmapFactory
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 
@@ -21,4 +19,32 @@ class SpotLightImageView @JvmOverloads constructor(
 
     private val bitmapAndroid = BitmapFactory.decodeResource(resources, R.drawable.android)
     private val bitmapSpotlight = BitmapFactory.decodeResource(resources, R.drawable.mask)
+
+    private var shader: Shader
+
+    init {
+        val bitmap = Bitmap.createBitmap(
+            bitmapSpotlight.width,
+            bitmapSpotlight.height,
+            Bitmap.Config.ARGB_8888
+        )
+
+        val canvas = Canvas(bitmap)
+        val shaderPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        shaderPaint.color = Color.BLACK
+
+        // Draw a black rectangle
+        canvas.drawRect(0.0f, 0.0f,
+            bitmapSpotlight.width.toFloat(), bitmapSpotlight.height.toFloat(),
+            shaderPaint
+        )
+
+        // Use the DST_OUT compositing mode to mask out the spotlight from the black rectangle
+        shaderPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+        canvas.drawBitmap(bitmapSpotlight, 0.0f, 0.0f, shaderPaint)
+
+        // Fill remaining space with bitmap edge pattern (black color)
+        shader = BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+        paint.shader = shader
+    }
 }
