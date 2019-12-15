@@ -3,6 +3,7 @@ package dev.valeryvpetrov.findme
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatImageView
 import kotlin.math.floor
 import kotlin.random.Random
@@ -23,6 +24,8 @@ class SpotLightImageView @JvmOverloads constructor(
     private val bitmapSpotlight = BitmapFactory.decodeResource(resources, R.drawable.mask)
 
     private var shader: Shader
+
+    private val shaderMatrix = Matrix()
 
     init {
         val bitmap = Bitmap.createBitmap(
@@ -59,6 +62,35 @@ class SpotLightImageView @JvmOverloads constructor(
         super.onDraw(canvas)
         canvas.drawColor(Color.WHITE)
         canvas.drawBitmap(bitmapAndroid, androidBitmapX, androidBitmapY, paint)
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val motionEventX = event.x
+        val motionEventY = event.y
+
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                shouldDrawSpotlight = true
+                if (isGameOver) {   // Restart the game.
+                    isGameOver = false
+                    setupWinnerRect()
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                shouldDrawSpotlight = false
+                isGameOver = winnerRect.contains(motionEventX, motionEventY)
+            }
+        }
+
+        // Replace spotlight.
+        shaderMatrix.setTranslate(
+            motionEventX - bitmapSpotlight.width / 2.0f,
+            motionEventY - bitmapSpotlight.height / 2.0f
+        )
+        shader.setLocalMatrix(shaderMatrix)
+
+        invalidate()    // Redraw.
+        return true
     }
 
     /**
