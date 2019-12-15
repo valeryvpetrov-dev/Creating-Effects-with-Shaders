@@ -50,6 +50,17 @@ class SpotLightImageView @JvmOverloads constructor(
         paint.shader = shader
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        setupWinnerRect()
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        canvas.drawColor(Color.WHITE)
+        canvas.drawBitmap(bitmapAndroid, androidBitmapX, androidBitmapY, paint)
+    }
+
     /**
      * Generates random location of android image.
      * Defines winner area according to android image position.
