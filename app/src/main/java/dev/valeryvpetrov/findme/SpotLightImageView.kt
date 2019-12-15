@@ -62,6 +62,14 @@ class SpotLightImageView @JvmOverloads constructor(
         super.onDraw(canvas)
         canvas.drawColor(Color.WHITE)
         canvas.drawBitmap(bitmapAndroid, androidBitmapX, androidBitmapY, paint)
+
+        if (!isGameOver) {
+            if (shouldDrawSpotlight) {
+                canvas.drawRect(0.0f, 0.0f, width.toFloat(), height.toFloat(), paint)
+            } else {
+                canvas.drawColor(Color.BLACK)
+            }
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
